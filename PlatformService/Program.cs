@@ -1,0 +1,41 @@
+using Microsoft.EntityFrameworkCore;
+using PlatformService.Application.BusinessLogic;
+using PlatformService.Contracts.Application;
+using PlatformService.Contracts.Repositories;
+using PlatformService.Contracts.SyncDataServices.Http;
+using PlatformService.Repository.DatabaseContext;
+using PlatformService.Repository.Repositories;
+using PlatformService.SyncDataServices.Http;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMem"));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
+builder.Services.AddScoped<IPlatformManagement, PlatformManagement>();
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
+var app = builder.Build();
+var config = app.Services.GetRequiredService<IConfiguration>();
+using var serviceScope = app.Services.CreateScope();
+PrepDB.PopulateDb(serviceScope);
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+//app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
