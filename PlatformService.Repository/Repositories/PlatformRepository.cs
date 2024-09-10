@@ -18,9 +18,9 @@ namespace PlatformService.Repository.Repositories
             _appDbContext.Platforms.Add(platform);
         }
 
-        public IEnumerable<Platform> GetAllPlatforms()
+        public List<Platform> GetAllPlatforms()
         {
-            return _appDbContext.Platforms;
+            return _appDbContext.Platforms.ToList();
         }
 
         public Platform? GetPlatformById(int id)
@@ -28,9 +28,9 @@ namespace PlatformService.Repository.Repositories
             return _appDbContext.Platforms.FirstOrDefault(x => x.Id == id);
         }
 
-        public Platform? GetPlatformByGuid(Ulid ulid)
+        public Platform? GetPlatformByGuid(Guid guid)
         {
-            return _appDbContext.Platforms.FirstOrDefault(x => x.Ulid == ulid);
+            return _appDbContext.Platforms.FirstOrDefault(x => x.Guid == guid);
         }
 
         public bool SaveChanges()

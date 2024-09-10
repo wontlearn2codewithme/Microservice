@@ -5,7 +5,7 @@ namespace PlatformService.Contracts.Models
     public class PlatformCreateRequest
     {
         [JsonIgnore]
-        public Ulid Ulid { get; set; } = Ulid.NewUlid();
+        public Guid Guid { get; set; } = Guid.NewGuid();
         public required string Name { get; set; }
         public required string Publisher { get; set; }
         public required string Cost { get; set; }

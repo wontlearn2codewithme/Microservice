@@ -4,9 +4,9 @@ namespace PlatformService.Contracts.Repositories
 {
     public interface IPlatformRepository
     {
-        public Platform? GetPlatformByGuid(Ulid ulid);
+        public Platform? GetPlatformByGuid(Guid ulid);
         bool SaveChanges();
-        IEnumerable<Platform> GetAllPlatforms();
+        List<Platform> GetAllPlatforms();
         Platform? GetPlatformById(int id);
         void CreatePlatform(Platform platform);
     }

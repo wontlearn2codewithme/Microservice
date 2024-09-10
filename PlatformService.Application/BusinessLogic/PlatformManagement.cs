@@ -38,7 +38,7 @@ namespace PlatformService.Application.BusinessLogic
             }
             return parsed;
         }
-        public PlatformReadResponse GetPlatformByGuid(Ulid guid)
+        public PlatformReadResponse GetPlatformByGuid(Guid guid)
         {
             var platform = _platformRepository.GetPlatformByGuid(guid);
             ArgumentNullException.ThrowIfNull(platform);
@@ -52,10 +52,10 @@ namespace PlatformService.Application.BusinessLogic
             var platformResponse = _mapper.Map<Platform, PlatformReadResponse>(platform);
             return platformResponse;
         }
-        public IEnumerable<PlatformReadResponse> GetAllPlatforms()
+        public List<PlatformReadResponse> GetAllPlatforms()
         {
             var platforms = _platformRepository.GetAllPlatforms();
-            var platformsResponse = _mapper.Map<IEnumerable<Platform>, IEnumerable<PlatformReadResponse>>(platforms);
+            var platformsResponse = _mapper.Map<List<Platform>, List<PlatformReadResponse>>(platforms);
             return platformsResponse;
         }
         public bool SaveChanges()

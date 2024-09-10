@@ -6,11 +6,11 @@ namespace PlatformService.Contracts.Entities
     {
         [Key]
         [Required]
-        public required int Id { get; set; }
+        public int Id { get; set; }
         [Required]
         public required string Name { get; set; }
         [Required]
-        public required Ulid Ulid { get; set; }
+        public required Guid Guid { get; set; }
         [Required]
         public required string Publisher { get; set; }
         [Required]

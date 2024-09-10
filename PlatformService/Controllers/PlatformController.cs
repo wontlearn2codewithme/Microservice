@@ -17,7 +17,7 @@ namespace PlatformService.Controllers
         }
 
         [HttpGet(Name = nameof(GetAllPlatforms))]
-        public ActionResult<IEnumerable<PlatformReadResponse>> GetAllPlatforms()
+        public ActionResult<List<PlatformReadResponse>> GetAllPlatforms()
         {
             var platforms = _platformManagement.GetAllPlatforms();
             return platforms.Any() ? Ok(platforms) : NotFound(platforms);
@@ -29,7 +29,7 @@ namespace PlatformService.Controllers
             try
             {
                 var createdPlatform = await _platformManagement.CreatePlatform(PlatformCreateRequest);
-                return CreatedAtRoute(nameof(GetPlatformByUlid), new { ulid = createdPlatform.Ulid }, createdPlatform);
+                return CreatedAtRoute(nameof(GetPlatformByGuid), new { guid = createdPlatform.Guid }, createdPlatform);
             }
             catch (Exception ex) 
             {
@@ -43,6 +43,10 @@ namespace PlatformService.Controllers
             try
             {
                 var platform = _platformManagement.GetPlatformById(platformId);
+                if (platform == null)
+                {
+                    return NotFound(platformId);
+                }
                 return Ok(platform);
             }
             catch (Exception ex) 
@@ -52,17 +56,17 @@ namespace PlatformService.Controllers
             
         }
 
-        [HttpGet("{ulid}", Name = nameof(GetPlatformByUlid))]
-        public ActionResult<PlatformReadResponse> GetPlatformByUlid([FromRoute] string ulid)
+        [HttpGet("{guid}", Name = nameof(GetPlatformByGuid))]
+        public ActionResult<PlatformReadResponse> GetPlatformByGuid([FromRoute] Guid guid)
         {
             try
             {
-                if (Ulid.TryParse(ulid, out Ulid parsedUlid))
+                var platform = _platformManagement.GetPlatformByGuid(guid);
+                if (platform == null) 
                 {
-                    var platform = _platformManagement.GetPlatformByGuid(parsedUlid);
-                    return Ok(platform);
+                    return NotFound(guid);
                 }
-                return BadRequest("Invalid Guid");
+                return Ok(platform);
             }
             catch (Exception ex)
             {

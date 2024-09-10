@@ -2,20 +2,32 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using PlatformService.Contracts.Entities;
+using Microsoft.EntityFrameworkCore.SqlServer;
+using Microsoft.EntityFrameworkCore;
 
 namespace PlatformService.Repository.DatabaseContext
 {
     public static class PrepDB
     {
-        public static void PopulateDb(IServiceScope serviceScope)
+        public static void PopulateDb(IServiceScope serviceScope, bool isProd)
         {
+            var appDbContext = serviceScope.ServiceProvider.GetService<AppDbContext>();
 
-            SeedData(serviceScope.ServiceProvider.GetService<AppDbContext>());
-        }
-
-        private static void SeedData(AppDbContext? appDbContext)
-        {
             ArgumentNullException.ThrowIfNull(appDbContext);
+            if (isProd)
+            {
+                try
+                {
+                    Console.WriteLine("Running migrations");
+                    appDbContext.Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed migrations: {ex}");
+                    //throw;
+                }
+
+            }
             if (appDbContext.Platforms.Any())
             {
                 Console.WriteLine("There is already data");
@@ -25,17 +37,15 @@ namespace PlatformService.Repository.DatabaseContext
             appDbContext.Platforms.AddRange(
                 new Platform
                 {
-                    Ulid = Ulid.NewUlid(),
+                    Guid = Guid.NewGuid(),
                     Cost = "Free",
-                    Id = 1,
                     Name = "Name",
                     Publisher = "Publisher"
                 },
                 new Platform
                 {
-                    Ulid = Ulid.NewUlid(),
+                    Guid = Guid.NewGuid(),
                     Cost = "A lot",
-                    Id = 2,
                     Name = "Name2",
                     Publisher = "Publisher2"
                 }

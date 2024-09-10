@@ -5,8 +5,8 @@ namespace PlatformService.Contracts.Application
     public interface IPlatformManagement
     {
         Task<PlatformReadResponse> CreatePlatform(PlatformCreateRequest platformCreateRequest);
-        IEnumerable<PlatformReadResponse> GetAllPlatforms();
-        PlatformReadResponse GetPlatformByGuid(Ulid guid);
+        List<PlatformReadResponse> GetAllPlatforms();
+        PlatformReadResponse GetPlatformByGuid(Guid guid);
         PlatformReadResponse GetPlatformById(int platformId);
         bool SaveChanges();
     }

@@ -10,7 +10,20 @@ using PlatformService.SyncDataServices.Http;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMem"));
+builder.Services.AddDbContext<AppDbContext>(options => {
+    if (builder.Environment.IsProduction())
+    {
+        var connectionString = builder.Configuration.GetConnectionString("PlatformsConnection");
+        Console.WriteLine("Estamos en PRO usando sqlserver");
+        options.UseSqlServer(connectionString, options => 
+        options.MigrationsAssembly("PlatformService.Repository"));
+    }
+    else
+    {
+        Console.WriteLine("Estamos en PRE usando in memory");
+        options.UseInMemoryDatabase("InMem");
+    }
+});
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
 builder.Services.AddScoped<IPlatformManagement, PlatformManagement>();
@@ -23,16 +36,13 @@ builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
 var app = builder.Build();
 var config = app.Services.GetRequiredService<IConfiguration>();
 using var serviceScope = app.Services.CreateScope();
-PrepDB.PopulateDb(serviceScope);
+PrepDB.PopulateDb(serviceScope, builder.Environment.IsProduction());
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-//app.UseHttpsRedirection();
+
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

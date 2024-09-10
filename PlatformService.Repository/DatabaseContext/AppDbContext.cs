@@ -10,5 +10,20 @@ namespace PlatformService.Repository.DatabaseContext
         {
 
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder
+                .Entity<Platform>()
+                .Property(p => p.Guid)
+                .HasConversion(
+                ulid => ulid,
+                guid => guid);
+            modelBuilder
+                .Entity<Platform>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+        }
     }
 }
