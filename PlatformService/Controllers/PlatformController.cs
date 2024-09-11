@@ -7,19 +7,12 @@ namespace PlatformService.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class PlatformController : ControllerBase
+    public class PlatformController(IPlatformManagement platformManagement) : ControllerBase
     {
-        private readonly IPlatformManagement _platformManagement;
-
-        public PlatformController(IPlatformManagement platformManagement)
-        {
-            _platformManagement = platformManagement;
-        }
-
         [HttpGet(Name = nameof(GetAllPlatforms))]
         public ActionResult<List<PlatformReadResponse>> GetAllPlatforms()
         {
-            var platforms = _platformManagement.GetAllPlatforms();
+            var platforms = platformManagement.GetAllPlatforms();
             return platforms.Any() ? Ok(platforms) : NotFound(platforms);
         }
 
@@ -28,7 +21,7 @@ namespace PlatformService.Controllers
         {
             try
             {
-                var createdPlatform = await _platformManagement.CreatePlatform(PlatformCreateRequest);
+                var createdPlatform = await platformManagement.CreatePlatform(PlatformCreateRequest);
                 return CreatedAtRoute(nameof(GetPlatformByGuid), new { guid = createdPlatform.Guid }, createdPlatform);
             }
             catch (Exception ex) 
@@ -42,7 +35,7 @@ namespace PlatformService.Controllers
         {
             try
             {
-                var platform = _platformManagement.GetPlatformById(platformId);
+                var platform = platformManagement.GetPlatformById(platformId);
                 if (platform == null)
                 {
                     return NotFound(platformId);
@@ -61,7 +54,7 @@ namespace PlatformService.Controllers
         {
             try
             {
-                var platform = _platformManagement.GetPlatformByGuid(guid);
+                var platform = platformManagement.GetPlatformByGuid(guid);
                 if (platform == null) 
                 {
                     return NotFound(guid);
