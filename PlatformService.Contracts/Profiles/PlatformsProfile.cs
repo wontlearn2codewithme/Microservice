@@ -10,6 +10,7 @@ namespace PlatformService.Contracts.Profiles
         {
             CreateMap<Platform, PlatformReadResponse>();
             CreateMap<PlatformCreateRequest, Platform>();
+            CreateMap<Platform, PlatformPublished>();
         }
     }
 }

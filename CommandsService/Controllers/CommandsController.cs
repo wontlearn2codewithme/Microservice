@@ -11,7 +11,7 @@ namespace CommandsService.Controllers
     public class CommandsController(ICommandRepository commandRepository, IMapper mapper) : ControllerBase
     {
         [HttpGet(Name = nameof(GetCommandsForPlatform))]
-        public ActionResult<IEnumerable<PlatformReadDTO>> GetCommandsForPlatform(int platformId)
+        public ActionResult<IEnumerable<CommandReadDTO>> GetCommandsForPlatform(int platformId)
         {
             Console.WriteLine("--> Hit GetCommandsForPlatform <--");
             if (!commandRepository.PlatformExists(platformId)) 
@@ -23,11 +23,11 @@ namespace CommandsService.Controllers
             {
                 return NotFound();
             }
-            return Ok(mapper.Map<IEnumerable<PlatformReadDTO>>(result));
+            return Ok(mapper.Map<IEnumerable<CommandReadDTO>>(result));
         }
 
         [HttpGet("{commandId}", Name = nameof(GetCommandForPlatform))]
-        public ActionResult<PlatformReadDTO> GetCommandForPlatform(int platformId, int commandId)
+        public ActionResult<CommandReadDTO> GetCommandForPlatform(int platformId, int commandId)
         {
             Console.WriteLine($"--> Hit GetCommandForPlatform -> platformId: {platformId} commandId: {commandId}");
             if (!commandRepository.PlatformExists(platformId))
@@ -39,7 +39,7 @@ namespace CommandsService.Controllers
             {
                 return NotFound();
             }
-            return Ok(mapper.Map<PlatformReadDTO>(result));
+            return Ok(mapper.Map<CommandReadDTO>(result));
         }
 
         [HttpPost]

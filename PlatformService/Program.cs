@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PlatformService.Application.AsyncDataServices;
 using PlatformService.Application.BusinessLogic;
 using PlatformService.Contracts.Application;
 using PlatformService.Contracts.Repositories;
@@ -10,12 +11,14 @@ using PlatformService.SyncDataServices.Http;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<AppDbContext>(options => {
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
     if (builder.Environment.IsProduction())
     {
         var connectionString = builder.Configuration.GetConnectionString("PlatformsConnection");
         Console.WriteLine("Estamos en PRO usando sqlserver");
-        options.UseSqlServer(connectionString, options => 
+        Console.WriteLine($"ConnectionString: {connectionString}");
+        options.UseSqlServer(connectionString, options =>
         options.MigrationsAssembly("PlatformService.Repository"));
     }
     else
@@ -27,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(options => {
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
 builder.Services.AddScoped<IPlatformManagement, PlatformManagement>();
+builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

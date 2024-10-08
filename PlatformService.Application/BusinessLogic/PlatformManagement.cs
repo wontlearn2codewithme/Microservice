@@ -12,12 +12,14 @@ namespace PlatformService.Application.BusinessLogic
         private readonly IPlatformRepository _platformRepository;
         private readonly IMapper _mapper;
         private readonly ICommandDataClient _commandDataClient;
+        private readonly IMessageBusClient _messageBusClient;
 
-        public PlatformManagement(IPlatformRepository platformRepository, IMapper mapper, ICommandDataClient commandDataClient)
+        public PlatformManagement(IPlatformRepository platformRepository, IMapper mapper, ICommandDataClient commandDataClient, IMessageBusClient messageBusClient)
         {
             _platformRepository = platformRepository;
             _mapper = mapper;
             _commandDataClient = commandDataClient;
+            _messageBusClient = messageBusClient;
         }
 
         public async Task<PlatformReadResponse> CreatePlatform(PlatformCreateRequest platformCreateRequest)
@@ -29,6 +31,20 @@ namespace PlatformService.Application.BusinessLogic
             try
             {
                 await _commandDataClient.SendPlatformToCommand(parsed);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Algo ha ido mal intenando ejecutar SendPlatformToCommand");
+                Console.WriteLine(e.ToString());
+            }
+
+            try
+            {
+                Console.WriteLine("--> Enviando mensaje a rabbitmq");
+                var platformPublished = _mapper.Map<PlatformPublished>(newPlatform);
+                platformPublished.Event = "Platform_Published";
+                _messageBusClient.PublishNewPlatform(platformPublished);
+                Console.WriteLine("--> mensaje enviado!!!");
             }
             catch (Exception e)
             {
